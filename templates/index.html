@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Team Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <style>
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(-45deg, #3b82f6, #2563eb, #1d4ed8, #1e40af);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .hover-scale {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+        
+        .tab-active {
+            border-bottom: 3px solid #3b82f6;
+            color: #1e40af;
+        }
+        
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: -1;
+            animation: float 8s ease-in-out infinite;
+            opacity: 0.5;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+        
+        .glow-button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .glow-button::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            z-index: -1;
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            border-radius: 10px;
+            animation: glowing 20s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .glow-button:hover::before {
+            opacity: 1;
+        }
+        
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: #f8fafc;
+            overflow: hidden;
+        }
+        
+        .animated-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.1);
+            animation: move 25s linear infinite;
+        }
+        
+        @keyframes move {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(100px, 100px); }
+            50% { transform: translate(200px, 0); }
+            75% { transform: translate(100px, -100px); }
+            100% { transform: translate(0, 0); }
+        }
+        
+        .card-hover-effect {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="animated-shape" style="width: 300px; height: 300px; top: 10%; left: 10%; opacity: 0.5; animation-delay: 0s;"></div>
+        <div class="animated-shape" style="width: 200px; height: 200px; top: 60%; left: 70%; opacity: 0.3; animation-delay: 5s;"></div>
+        <div class="animated-shape" style="width: 150px; height: 150px; top: 30%; left: 80%; opacity: 0.2; animation-delay: 10s;"></div>
+        <div class="animated-shape" style="width: 250px; height: 250px; top: 70%; left: 20%; opacity: 0.4; animation-delay: 15s;"></div>
+    </div>
+
+    <!-- Floating Blobs -->
+    <div class="blob bg-blue-300" style="width: 200px; height: 200px; top: 20%; left: 15%;"></div>
+    <div class="blob bg-purple-300" style="width: 250px; height: 250px; top: 60%; right: 15%;"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="glass-effect p-8 rounded-xl shadow-2xl flex flex-col items-center space-y-4">
+            <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+            <span class="text-gray-800 font-medium">Processing your request...</span>
+            <div class="text-sm text-gray-600">This may take a few moments</div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="glass-nav sticky top-0 z-40 py-4 px-6 shadow-md">
+        <div class="container mx-auto">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-robot text-blue-600 text-2xl"></i>
+                    <span class="font-bold text-xl gradient-text">FinGenius AI</span>
+                </div>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="nav-link text-gray-700 hover:text-blue-600 font-medium">
+                        <i class="fas fa-home mr-1"></i> Home
+                    </a>
+                    <a href="#features" class="nav-link text-gray-700 hover:text-blue-600 font-medium">
+                        <i class="fas fa-star mr-1"></i> Features
+                    </a>
+                    <a href="#agents" class="nav-link text-gray-700 hover:text-blue-600 font-medium">
+                        <i class="fas fa-users mr-1"></i> Agents
+                    </a>
+                    <a href="#about" class="nav-link text-gray-700 hover:text-blue-600 font-medium">
+                        <i class="fas fa-info-circle mr-1"></i> About
+                    </a>
+                </div>
+                
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-moon text-gray-700"></i>
+                </button>
+                
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 hover:text-blue-600 focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="md:hidden hidden mt-4 p-4 rounded-lg glass-effect animate__animated animate__fadeIn">
+                <div class="flex flex-col space-y-4">
+                    <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">
+                        <i class="fas fa-home mr-1"></i> Home
+                    </a>
+                    <a href="#features" class="text-gray-700 hover:text-blue-600 font-medium">
+                        <i class="fas fa-star mr-1"></i> Features
+                    </a>
+                    <a href="#agents" class="text-gray-700 hover:text-blue-600 font-medium">
+                        <i class="fas fa-users mr-1"></i> Agents
+                    </a>
+                    <a href="#about" class="text-gray-700 hover:text-blue-600 font-medium">
+                        <i class="fas fa-info-circle mr-1"></i> About
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="gradient-bg text-white py-20 mb-12 relative overflow-hidden">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center animate__animated animate__fadeIn">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6 animate__animated animate__fadeInUp">FinGenius AI Agent Team</h1>
+                <p class="text-xl md:text-2xl opacity-90 mb-8 animate__animated animate__fadeInUp animate__delay-1s">Harness the power of specialized AI agents for comprehensive insights</p>
+                <a href="#agents" class="inline-block bg-white text-blue-600 px-8 py-3 rounded-full font-bold hover:bg-opacity-90 transition-all shadow-lg transform hover:scale-105 animate__animated animate__fadeInUp animate__delay-2s">
+                    <i class="fas fa-rocket mr-2"></i>Get Started
+                </a>
+            </div>
+        </div>
+        
+        <!-- Hero Background Elements -->
+        <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" class="w-full h-16 md:h-24">
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" fill="#f8fafc" opacity=".25"></path>
+                <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" fill="#f8fafc" opacity=".5"></path>
+                <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="#f8fafc"></path>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 mb-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-text" data-aos="fade-up">Powerful Features</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-effect rounded-xl p-6 shadow-xl card-hover-effect" data-aos="fade-up" data-aos-delay="100">
+                    <div class="text-blue-600 mb-4 text-4xl">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Web Search Intelligence</h3>
+                    <p class="text-gray-600">Access the latest information from across the web with our powerful search agent.</p>
+                </div>
+                
+                <div class="glass-effect rounded-xl p-6 shadow-xl card-hover-effect" data-aos="fade-up" data-aos-delay="200">
+                    <div class="text-blue-600 mb-4 text-4xl">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Financial Insights</h3>
+                    <p class="text-gray-600">Get detailed stock analyses, market trends, and investment recommendations.</p>
+                </div>
+                
+                <div class="glass-effect rounded-xl p-6 shadow-xl card-hover-effect" data-aos="fade-up" data-aos-delay="300">
+                    <div class="text-blue-600 mb-4 text-4xl">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Team Collaboration</h3>
+                    <p class="text-gray-600">Combine the power of multiple specialized agents for comprehensive insights.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agents Section -->
+    <section id="agents" class="py-12 mb-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-text" data-aos="fade-up">Choose Your Agent</h2>
+            
+            <!-- Agent Selection Tabs -->
+            <div class="max-w-4xl mx-auto mb-8" data-aos="fade-up">
+                <div class="flex flex-wrap border-b border-gray-200 justify-center">
+                    <button id="team-tab" class="tab-btn px-6 py-3 text-lg font-medium tab-active" onclick="switchTab('team')">
+                        <i class="fas fa-users mr-2"></i>Team of Agents
+                    </button>
+                    <button id="web-tab" class="tab-btn px-6 py-3 text-lg font-medium text-gray-500" onclick="switchTab('web')">
+                        <i class="fas fa-search mr-2"></i>Web Search Agent
+                    </button>
+                    <button id="finance-tab" class="tab-btn px-6 py-3 text-lg font-medium text-gray-500" onclick="switchTab('finance')">
+                        <i class="fas fa-chart-line mr-2"></i>Finance Agent
+                    </button>
+                </div>
+            </div>
+
+            <!-- Team Agent Form -->
+            <div id="team-form" class="agent-form max-w-2xl mx-auto glass-effect rounded-xl shadow-xl p-8 mb-8 hover-scale" data-aos="fade-up">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Team of Agents</h2>
+                <p class="text-gray-600 mb-6">This team combines web search and financial data capabilities for comprehensive insights.</p>
+                <form id="team-search-form" class="space-y-6">
+                    <div>
+                        <label for="team-prompt" class="block text-lg font-medium text-gray-800 mb-3">What would you like to know?</label>
+                        <textarea
+                            id="team-prompt"
+                            name="prompt"
+                            rows="4"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            placeholder="e.g., Summarize analyst recommendations and share the latest news for NVDA"
+                        ></textarea>
+                    </div>
+                    <button
+                        type="submit"
+                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all transform hover:scale-[1.02] active:scale-[0.98] glow-button"
+                    >
+                        <i class="fas fa-robot mr-2"></i>Ask Team
+                    </button>
+                </form>
+            </div>
+
+            <!-- Web Agent Form -->
+            <div id="web-form" class="agent-form max-w-2xl mx-auto glass-effect rounded-xl shadow-xl p-8 mb-8 hover-scale hidden" data-aos="fade-up">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Web Search Agent</h2>
+                <p class="text-gray-600 mb-6">Search the web for the latest information on any topic with source references.</p>
+                <form id="web-search-form" class="space-y-6">
+                    <div>
+                        <label for="web-prompt" class="block text-lg font-medium text-gray-800 mb-3">What would you like to search?</label>
+                        <textarea
+                            id="web-prompt"
+                            name="prompt"
+                            rows="4"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            placeholder="e.g., What are the latest developments in AI technology?"
+                        ></textarea>
+                    </div>
+                    <button
+                        type="submit"
+                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all transform hover:scale-[1.02] active:scale-[0.98] glow-button"
+                    >
+                        <i class="fas fa-search mr-2"></i>Search Web
+                    </button>
+                </form>
+            </div>
+
+            <!-- Finance Agent Form -->
+            <div id="finance-form" class="agent-form max-w-2xl mx-auto glass-effect rounded-xl shadow-xl p-8 mb-8 hover-scale hidden" data-aos="fade-up">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Finance Agent</h2>
+                <p class="text-gray-600 mb-6">Get financial data, stock prices, and analyst recommendations for any company.</p>
+                <form id="finance-search-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="ticker" class="block text-lg font-medium text-gray-800 mb-3">Stock Ticker Symbol</label>
+                            <input
+                                type="text"
+                                id="ticker"
+                                name="ticker"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="e.g., AAPL, MSFT, NVDA"
+                            >
+                        </div>
+                        <div>
+                            <label for="data-type" class="block text-lg font-medium text-gray-800 mb-3">Information Type</label>
+                            <select
+                                id="data-type"
+                                name="data-type"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            >
+                                <option value="all">All Information</option>
+                                <option value="price">Stock Price</option>
+                                <option value="recommendations">Analyst Recommendations</option>
+                                <option value="company">Company Information</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="finance-prompt" class="block text-lg font-medium text-gray-800 mb-3">Additional Details (Optional)</label>
+                        <textarea
+                            id="finance-prompt"
+                            name="prompt"
+                            rows="3"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            placeholder="e.g., Compare with industry peers, Focus on growth potential"
+                        ></textarea>
+                    </div>
+                    <button
+                        type="submit"
+                        class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all transform hover:scale-[1.02] active:scale-[0.98] glow-button"
+                    >
+                        <i class="fas fa-chart-line mr-2"></i>Get Financial Data
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results" class="max-w-4xl mx-auto glass-effect rounded-xl shadow-xl p-8 hidden animate__animated animate__fadeIn">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Results</h2>
+                    <button
+                        id="clear-results"
+                        class="text-gray-500 hover:text-gray-700 transition-colors"
+                        onclick="clearResults()"
+                    >
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="table-container">
+                    <div id="response-content" class="prose max-w-none"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 gradient-text" data-aos="fade-up">About Our Technology</h2>
+            
+            <div class="max-w-4xl mx-auto glass-effect rounded-xl shadow-xl p-8" data-aos="fade-up">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 text-gray-800">AI-Powered Insights</h3>
+                        <p class="text-gray-600 mb-4">Our platform combines the power of specialized AI agents to provide you with comprehensive insights and analysis.</p>
+                        <p class="text-gray-600 mb-4">Using advanced language models and real-time data sources, our agents can deliver up-to-date information and recommendations on any topic.</p>
+                        <div class="flex space-x-4 mt-6">
+                            <a target="_blank" href="https://github.com/Ad1tyaRaj" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                <i class="fab fa-github text-xl"></i>
+                            </a>
+                            <a target="_blank" href="https://twitter.com/Ad1tyaRaj_" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                <i class="fab fa-twitter text-xl"></i>
+                            </a>
+                            <a target="_blank" href="https://www.linkedin.com/in/aditya-raj-07950a234/" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                <i class="fab fa-linkedin text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="relative w-72 h-72">
+                            <div class="absolute inset-0 bg-blue-100 rounded-full animate__animated animate__pulse animate__infinite"></div>
+                            <div class="absolute inset-4 bg-blue-200 rounded-full animate__animated animate__pulse animate__infinite animate__delay-1s"></div>
+                            <div class="absolute inset-8 bg-blue-300 rounded-full animate__animated animate__pulse animate__infinite animate__delay-2s"></div>
+                            <div class="absolute inset-12 bg-blue-400 rounded-full animate__animated animate__pulse animate__infinite animate__delay-3s"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <i class="fas fa-brain text-6xl text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 text-center text-gray-600 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center justify-center md:justify-start space-x-2">
+                        <i class="fas fa-robot text-blue-600 text-2xl"></i>
+                        <span class="font-bold text-xl gradient-text">FinGenius AI Team</span>
+                    </div>
+                </div>
+                <div class="flex space-x-6 mb-4 md:mb-0">
+                    <a target="_blank" href="https://github.com/Ad1tyaRaj" class="text-gray-500 hover:text-blue-600 transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a target="_blank" href="https://twitter.com/Ad1tyaRaj_" class="text-gray-500 hover:text-blue-600 transition-colors">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a target="_blank" href="https://www.linkedin.com/in/aditya-raj-07950a234/" class="text-gray-500 hover:text-blue-600 transition-colors">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                </div>
+                <div>
+                    <p>Powered by FinGenius AI • Built with Aditya Raj</p>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-200">
+                <p>&copy; 2025 FinGenius AI Team. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+        
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all forms
+            document.querySelectorAll('.agent-form').forEach(form => {
+                form.classList.add('hidden');
+            });
+            
+            // Show the selected form
+            document.getElementById(`${tabName}-form`).classList.remove('hidden');
+            
+            // Update tab styling
+            document.querySelectorAll('.tab-btn').forEach(tab => {
+                tab.classList.remove('tab-active');
+                tab.classList.add('text-gray-500');
+            });
+            
+            document.getElementById(`${tabName}-tab`).classList.add('tab-active');
+            document.getElementById(`${tabName}-tab`).classList.remove('text-gray-500');
+        }
+        
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('animate__fadeIn');
+            } else {
+                mobileMenu.classList.add('animate__fadeOut');
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenu.classList.remove('animate__fadeOut');
+                }, 500);
+            }
+        });
+        
+        // Theme toggle functionality
+        let darkMode = false;
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            darkMode = !darkMode;
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-toggle').innerHTML = '<i class="fas fa-sun text-yellow-500"></i>';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('theme-toggle').innerHTML = '<i class="fas fa-moon text-gray-700"></i>';
+            }
+        });
+        
+        // Team Agent Form Submission
+        document.getElementById('team-search-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const prompt = document.getElementById('team-prompt').value;
+            if (!prompt) {
+                alert('Please enter a query');
+                return;
+            }
+            
+            await submitQuery(prompt, 'team');
+        });
+        
+        // Web Agent Form Submission
+        document.getElementById('web-search-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const prompt = document.getElementById('web-prompt').value;
+            if (!prompt) {
+                alert('Please enter a query');
+                return;
+            }
+            
+            await submitQuery(prompt, 'web');
+        });
+        
+        // Finance Agent Form Submission
+        document.getElementById('finance-search-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const ticker = document.getElementById('ticker').value;
+            const dataType = document.getElementById('data-type').value;
+            let prompt = document.getElementById('finance-prompt').value;
+            
+            if (!ticker) {
+                alert('Please enter a stock ticker symbol');
+                return;
+            }
+            
+            // Construct the prompt based on the data type
+            if (dataType === 'price') {
+                prompt = `Get current stock price ${prompt}`;
+            } else if (dataType === 'recommendations') {
+                prompt = `Get analyst recommendations ${prompt}`;
+            } else if (dataType === 'company') {
+                prompt = `Get company information ${prompt}`;
+            } else {
+                prompt = `Get stock price, analyst recommendations, and company information ${prompt}`;
+            }
+            
+            await submitQuery(prompt, 'finance', ticker);
+        });
+        
+        // Generic query submission function
+        async function submitQuery(prompt, agentType, ticker = '') {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const results = document.getElementById('results');
+            const responseContent = document.getElementById('response-content');
+            
+            // Show loading overlay
+            loadingOverlay.classList.remove('hidden');
+            loadingOverlay.classList.add('flex');
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        prompt, 
+                        agent_type: agentType,
+                        ticker
+                    }),
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    responseContent.innerHTML = data.response;
+                    results.classList.remove('hidden');
+                    results.classList.add('animate__animated', 'animate__fadeIn');
+                    
+                    // Scroll to results
+                    results.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('An error occurred while processing your request');
+                console.error('Error:', error);
+            } finally {
+                // Hide loading overlay
+                loadingOverlay.classList.add('hidden');
+                loadingOverlay.classList.remove('flex');
+            }
+        }
+
+        // Clear results function
+        function clearResults() {
+            const results = document.getElementById('results');
+            results.classList.add('animate__animated', 'animate__fadeOut');
+            setTimeout(() => {
+                results.classList.add('hidden');
+                results.classList.remove('animate__fadeOut');
+                document.getElementById('response-content').innerHTML = '';
+            }, 500);
+        }
+    </script>
+</body>
+</html>
