@@ -4,8 +4,12 @@ from phi.model.groq import Groq
 from phi.tools.duckduckgo import DuckDuckGo
 from phi.tools.yfinance import YFinanceTools
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
+api_key = os.getenv("GROQ_API_KEY")
+
+client = Groq(api_key=api_key)
 
 web_agent = Agent(
     name="Web Agent",

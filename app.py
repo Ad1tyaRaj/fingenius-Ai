@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from team_app import web_agent, finance_agent, agent_team
+from phi.model.groq import Groq
 from dotenv import load_dotenv
 import os
 import re
@@ -7,6 +8,9 @@ import markdown
 
 # Load environment variables
 load_dotenv()
+api_key = os.getenv("GROQ_API_KEY")
+
+client = Groq(api_key=api_key)
 
 app = Flask(__name__)
 
